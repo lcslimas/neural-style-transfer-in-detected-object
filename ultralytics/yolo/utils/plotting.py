@@ -110,7 +110,7 @@ class Annotator:
                             thickness=tf,
                             lineType=cv2.LINE_AA)
 
-    def masks(self, masks, colors, im_gpu, alpha=0.5, retina_masks=False):
+    def masks(self, masks, colors, im_gpu, alpha=0.1, retina_masks=False):
         """Plot masks at once.
         Args:
             masks (tensor): predicted masks on cuda, shape: [n, h, w]
@@ -131,6 +131,7 @@ class Annotator:
         masks_color = masks * (colors * alpha)  # shape(n,h,w,3)
 
         inv_alph_masks = (1 - masks * alpha).cumprod(0)  # shape(n,h,w,1)
+        print(inv_alph_masks)
         mcs = (masks_color * inv_alph_masks).sum(0) * 2  # mask color summand shape(n,h,w,3)
 
         im_gpu = im_gpu.flip(dims=[0])  # flip channel
