@@ -32,7 +32,7 @@ def seed_everything(seed):
     torch.backends.cudnn.benchmark = True
 
 seed_everything(42) #for reproducibility
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda")
 
 # Mean and standard deviation used for training
 mean = np.array([0.485, 0.456, 0.406])
@@ -310,36 +310,36 @@ def fast_trainer(style_image,
     plt.legend()
     plt.show()
 
-def test_image(image_path,checkpoint_model,save_path):
+def test_image(image,checkpoint_model,save_path):
     os.makedirs(os.path.join(save_path,"results"), exist_ok=True)
 
     transform = test_transform()
-
+    print(time.perf_counter(), 317)
     # Define model and load model checkpoint
     transformer = TransformerNet().to(device)
     transformer.load_state_dict(torch.load(checkpoint_model))
     transformer.eval()
 
+    print(time.perf_counter(), 323)
     # Prepare input
-    image_tensor = Variable(transform(Image.open(image_path))).to(device)
+    image_tensor = Variable(transform(image)).to(device)
     image_tensor = image_tensor.unsqueeze(0)
 
+    print(time.perf_counter(), 328)
     # Stylize image
     with torch.no_grad():
-        stylized_image = denormalize(transformer(image_tensor)).cpu()
-    # Save image
-    fn = checkpoint_model.split('/')[-1].split('.')[0]
-    save_image(stylized_image, os.path.join(save_path,f"results/{fn}-output.jpg"))
-    print("Image Saved!")
-    plt.imshow(cv2.cvtColor(cv2.imread(os.path.join(save_path,f"results/{fn}-output.jpg")), cv2.COLOR_BGR2RGB))
-    print(time.perf_counter())
+        stylized_image = denormalize(transformer(image_tensor)).cpu().detach().numpy()
+        
+    # cv2.imshow('shape + img', stylized_image)
+    return stylized_image
+    
 """ Run this to train the model """
 #[NOTE]: For representation purpose i am using a smaller dataset. Pls use the dataset given at the start of this notebook 
 #for better results and change the dataset_path in this function.
 
 # fast_trainer(style_image='./style/picasso_selfportrait.jpg',style_name = 'Picasso_Selfportrait',
-#              dataset_path='./../dataset', epochs = 1)
+#              dataset_path='./dataset', epochs = 1)
 
-test_image(image_path = './content/japanese_garden.jpg',
-           checkpoint_model = './checkpoints/best_model.pth',
-           save_path = './')
+# test_image(image_path = './content/japanese_garden.jpg',
+#            checkpoint_model = './checkpoints/best_model.pth',
+#            save_path = './')
