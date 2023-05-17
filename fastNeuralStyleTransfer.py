@@ -314,18 +314,15 @@ def test_image(image,checkpoint_model,save_path):
     os.makedirs(os.path.join(save_path,"results"), exist_ok=True)
 
     transform = test_transform()
-    print(time.perf_counter(), 317)
     # Define model and load model checkpoint
     transformer = TransformerNet().to(device)
     transformer.load_state_dict(torch.load(checkpoint_model))
     transformer.eval()
 
-    print(time.perf_counter(), 323)
     # Prepare input
     image_tensor = Variable(transform(image)).to(device)
     image_tensor = image_tensor.unsqueeze(0)
 
-    print(time.perf_counter(), 328)
     # Stylize image
     with torch.no_grad():
         stylized_image = denormalize(transformer(image_tensor)).cpu().detach().numpy()

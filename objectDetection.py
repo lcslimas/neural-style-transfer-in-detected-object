@@ -8,7 +8,7 @@ import fastNeuralStyleTransfer as fnst
 
 
 # Load a model
-model = YOLO("yolov8s-seg.pt")
+model = YOLO("yolov8x-seg.pt")
 
 def on_predict_batch_start(predictor: SegmentationPredictor):
   for result in (predictor.results if hasattr(predictor, "results") else []):
@@ -25,14 +25,19 @@ def on_predict_batch_start(predictor: SegmentationPredictor):
           allMasks = new
         else :
           allMasks = cv2.addWeighted(allMasks, 1, new, 1, 0)
-      
+          
       stylizedImg = np.transpose(fnst.test_image(allMasks,
            checkpoint_model = './checkpoints/best_model.pth',
            save_path = './')[0], (1,2,0))[...,::-1]
-      # blended = cv2.addWeighted(ori_img, 1, stylizedImg, 0.5, 0)
-      # cv2.imshow('shape + img', blended)
-      cv2.imshow('shape + img', stylizedImg)
-      cv2.imshow('img', ori_img)
+      
+      # stylizedImg = stylizedImg.astype(np.uint8)
+      cv2.imshow('Imagem original', ori_img)
+      stylizedImg[allMasks == 0] = 0
+      ori_img[allMasks != 0] = 0
+      stylizedImg = np.clip(stylizedImg * 255.0, 0, 255).astype(np.uint8)
+      blended = cv2.addWeighted(ori_img, 1, stylizedImg, 1, 0)
+      cv2.imshow('Imagem com transferência Neural de estilo', stylizedImg)
+      cv2.imshow('Imagem original com tne', blended)
     
 # results = model.predict(source= "0", show= True, boxes= False)
 model.add_callback("on_predict_batch_start", on_predict_batch_start)
