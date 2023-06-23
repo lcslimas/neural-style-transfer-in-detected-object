@@ -17,11 +17,7 @@ from torchvision import datasets
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 import cv2
-import time
 
-print(time.perf_counter())
-
-print(torch.cuda.is_available())
 def seed_everything(seed):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -334,8 +330,8 @@ def test_image(image,checkpoint_model,save_path):
 #[NOTE]: For representation purpose i am using a smaller dataset. Pls use the dataset given at the start of this notebook 
 #for better results and change the dataset_path in this function.
 
-# fast_trainer(style_image='./style/picasso_selfportrait.jpg',style_name = 'Picasso_Selfportrait',
-#              dataset_path='./dataset', epochs = 1)
+# fast_trainer(style_image='./style/romero-britto.jpeg',style_name = 'Romero_Britto',
+#              dataset_path='./dataset', epochs = 1000)
 
 # test_image(image_path = './content/japanese_garden.jpg',
 #            checkpoint_model = './checkpoints/best_model.pth',
