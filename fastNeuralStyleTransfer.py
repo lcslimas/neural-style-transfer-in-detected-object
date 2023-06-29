@@ -17,7 +17,11 @@ from torchvision import datasets
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 import cv2
+import time
 
+print(time.perf_counter())
+
+print(torch.cuda.is_available())
 def seed_everything(seed):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -76,17 +80,17 @@ class TransformerNet(torch.nn.Module):
     def __init__(self):
         super(TransformerNet, self).__init__()
         self.model = nn.Sequential(
-            ConvBlock(3, 32, kernel_size=9, stride=1),
+            ConvBlock(3, 16, kernel_size=9, stride=1),
+            ConvBlock(16, 32, kernel_size=3, stride=2),
             ConvBlock(32, 64, kernel_size=3, stride=2),
-            ConvBlock(64, 128, kernel_size=3, stride=2),
-            ResidualBlock(128),
-            ResidualBlock(128),
-            ResidualBlock(128),
-            ResidualBlock(128),
-            ResidualBlock(128),
-            ConvBlock(128, 64, kernel_size=3, upsample=True),
+            ResidualBlock(64),
+            ResidualBlock(64),
+            ResidualBlock(64),
+            ResidualBlock(64),
+            ResidualBlock(64),
             ConvBlock(64, 32, kernel_size=3, upsample=True),
-            ConvBlock(32, 3, kernel_size=9, stride=1, normalize=False, relu=False),
+            ConvBlock(32, 16, kernel_size=3, upsample=True),
+            ConvBlock(16, 3, kernel_size=9, stride=1, normalize=False, relu=False),
         )
 
     def forward(self, x):
@@ -330,7 +334,7 @@ def test_image(image,checkpoint_model,save_path):
 #[NOTE]: For representation purpose i am using a smaller dataset. Pls use the dataset given at the start of this notebook 
 #for better results and change the dataset_path in this function.
 
-# fast_trainer(style_image='./style/romero-britto.jpeg',style_name = 'Romero_Britto',
+# fast_trainer(style_image='./style/romero-britto.jpeg',style_name = 'romero_britto_improved',
 #              dataset_path='./dataset', epochs = 1000)
 
 # test_image(image_path = './content/japanese_garden.jpg',
