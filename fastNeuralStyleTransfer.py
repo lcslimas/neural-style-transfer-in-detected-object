@@ -16,7 +16,6 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt
-import cv2
 
 def seed_everything(seed):
     random.seed(seed)
