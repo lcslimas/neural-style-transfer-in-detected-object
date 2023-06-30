@@ -7,7 +7,7 @@ import numpy as np
 import fastNeuralStyleTransfer as fnst
 from time import perf_counter
 # Load a model
-model = YOLO("yolov8x-seg.pt")
+model = YOLO("yolov8n-seg.pt")
 
 styles = ['romero_britto_improved_6000.pth', 'Picasso_Selfportrait_6000_improved.pth' ]
 
@@ -64,7 +64,7 @@ def on_predict_batch_start(predictor: SegmentationPredictor):
       else:
         stylizedImg = allStyledMask0Tne if allStyledMask0Tne is not None else allStyledMask1
 
-      blended = cv2.addWeighted(ori_img, 1, stylizedImg, 0.7, 0)
+      blended = cv2.addWeighted(ori_img, 1, stylizedImg, 1, 0)
       cv2.imshow('Imagem original com tne', blended)
       cv2.waitKey(1)
       print("velocidade de execução: " + str(1 / (perf_counter() - start) ))

@@ -16,10 +16,6 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt
-import cv2
-import time
-
-print(time.perf_counter())
 
 print(torch.cuda.is_available())
 def seed_everything(seed):
@@ -75,10 +71,10 @@ class VGG16(torch.nn.Module):
         return out
 
 
-""" Transformer Net """
-class TransformerNet(torch.nn.Module):
+""" Transformer Net Improved"""
+class TransformerNetImproved(torch.nn.Module):
     def __init__(self):
-        super(TransformerNet, self).__init__()
+        super(TransformerNetImproved, self).__init__()
         self.model = nn.Sequential(
             ConvBlock(3, 16, kernel_size=9, stride=1),
             ConvBlock(16, 32, kernel_size=3, stride=2),
@@ -91,6 +87,26 @@ class TransformerNet(torch.nn.Module):
             ConvBlock(64, 32, kernel_size=3, upsample=True),
             ConvBlock(32, 16, kernel_size=3, upsample=True),
             ConvBlock(16, 3, kernel_size=9, stride=1, normalize=False, relu=False),
+        )
+
+    def forward(self, x):
+        return self.model(x)
+    
+class TransformerNet(torch.nn.Module):
+    def __init__(self):
+        super(TransformerNet, self).__init__()
+        self.model = nn.Sequential(
+            ConvBlock(3, 32, kernel_size=9, stride=1),
+            ConvBlock(32, 64, kernel_size=3, stride=2),
+            ConvBlock(64, 128, kernel_size=3, stride=2),
+            ResidualBlock(128),
+            ResidualBlock(128),
+            ResidualBlock(128),
+            ResidualBlock(128),
+            ResidualBlock(128),
+            ConvBlock(128, 64, kernel_size=3, upsample=True),
+            ConvBlock(64, 32, kernel_size=3, upsample=True),
+            ConvBlock(32, 3, kernel_size=9, stride=1, normalize=False, relu=False),
         )
 
     def forward(self, x):
@@ -315,7 +331,7 @@ def test_image(image,checkpoint_model,save_path):
 
     transform = test_transform()
     # Define model and load model checkpoint
-    transformer = TransformerNet().to(device)
+    transformer = TransformerNetImproved().to(device)
     transformer.load_state_dict(torch.load(checkpoint_model))
     transformer.eval()
 
